@@ -33,9 +33,10 @@ Here's what running the utility will do to your system:
 6. Create a Kerberos principal for Cloudera Manager (cloudera-scm/admin) so CM
    can be configured to manage Kerberos principals and keytabs for various CDH
    services.
-7. If running on the same host as Cloudera Manager, generate the proper
+7. ~~If running on the same host as Cloudera Manager, generate the proper~
    configuration files and keytabs for the CM server
-   (/etc/cloudera-scm-server/{cmf.principal, cmf.keytab}).
+   (/etc/cloudera-scm-server/{cmf.principal, cmf.keytab}).~~
+   daisukebe has changed the behavior for configuring Kerberos with Cloudera Manager 5.1 (and above). Then this script just generates a principal as __cloudera-scm/admin__ for CM with a password as '__cloudera__'.
 8. Start the Kerberos KDC and Admin services.
 9. Tell you where to find the documentation for enabling Kerberos in Cloudera
    Manager, and what to do next.
@@ -77,4 +78,3 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 Copyright Cloudera 2013
-
