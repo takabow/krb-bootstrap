@@ -251,6 +251,15 @@ display_next_steps() {
   echo
 }
 
+display_next_steps2() {
+  echo "*** NEXT ***"
+  echo
+  echo "KDC server is configured with realm \"${kdc_realm}\". "
+  echo "Please do the following steps here to configure KDC with a cluster managed by Cloudera Manager:"
+  echo "http://www.cloudera.com/content/cloudera/en/documentation/core/latest/topics/cm_sg_s4_kerb_wizard.html"
+  echo
+}
+
 configure_environment
 prompt_for_safety
 install_krb_packages
@@ -259,5 +268,4 @@ configure_krb_client
 create_kdc_database
 #configure_cm_files
 start_services
-display_next_steps
-
+display_next_steps2
