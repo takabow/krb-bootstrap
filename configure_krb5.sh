@@ -17,7 +17,7 @@
 tmpl_dir="tmpl"
 domain="$(hostname -d)"
 hostname="$(hostname -f)"
-kdc_realm="CLOUDERA"
+kdc_realm="HADOOP"
 kdc_directory="/var/kerberos/krb5kdc"
 
 log() {
