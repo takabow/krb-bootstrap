@@ -237,7 +237,6 @@ initializing_principals(){
     log DEBUG "Creating several principals for a start; hdfs, hive, and daisuke."
     echo "addprinc -pw hdfs hdfs" | kadmin.local
     echo "addprinc -pw hive hive" | kadmin.local
-    echo "addprinc -pw daisuke daisuke" | kadmin.local
 }
 
 display_next_steps() {
