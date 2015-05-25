@@ -41,7 +41,7 @@ Here's what running the utility will do to your system:
 9. Tell you where to find the documentation for enabling Kerberos in Cloudera
    Manager, and what to do next.
 
-### What it does not
+## What it does not
 
 This utility installs the packages only on the host this runs. If there are
 two or more servers in the cluster, install the client libraries on the other hosts:
