@@ -233,6 +233,13 @@ start_services() {
     error "Failed to start kadmin service" 1
 }
 
+initializing_principals(){
+    log DEBUG "Creating several principals for a start; hdfs, hive, and daisuke."
+    echo "addprinc -pw hdfs hdfs" | kadmin.local
+    echo "addprinc -pw hive hive" | kadmin.local
+    echo "addprinc -pw daisuke daisuke" | kadmin.local
+}
+
 display_next_steps() {
   echo "*** NEXT ***"
   echo
@@ -257,7 +264,11 @@ display_next_steps2() {
   echo "KDC server is configured with realm \"${kdc_realm}\". "
   echo "Please do the following steps here to configure KDC with a cluster managed by Cloudera Manager:"
   echo "http://www.cloudera.com/content/cloudera/en/documentation/core/latest/topics/cm_sg_s4_kerb_wizard.html"
+  echo 
+  echo "Note that this utility installs the required packages only on the host this runs. If there are"
+  echo "two or more servers in the cluster, install the client libraries on the other hosts:"
   echo
+  echo "yum -y install krb5-workstation"
 }
 
 configure_environment
@@ -268,4 +279,5 @@ configure_krb_client
 create_kdc_database
 #configure_cm_files
 start_services
+initializing_principals
 display_next_steps2
