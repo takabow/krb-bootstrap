@@ -38,7 +38,8 @@ Here's what running the utility will do to your system:
    (/etc/cloudera-scm-server/{cmf.principal, cmf.keytab}).~~
    daisukebe has changed the behavior for configuring Kerberos with Cloudera Manager 5.1 (and above). Then this script just generates a principal as __cloudera-scm/admin__ for CM with a password as '__cloudera__'.
 8. Start the Kerberos KDC and Admin services.
-9. Tell you where to find the documentation for enabling Kerberos in Cloudera
+9. Create the following principals for a start: hdfs@HADOOP (password: hdfs), hive@HADOOP (password: hive).
+10. Tell you where to find the documentation for enabling Kerberos in Cloudera
    Manager, and what to do next.
 
 ## What it does not
