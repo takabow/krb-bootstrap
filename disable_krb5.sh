@@ -41,7 +41,7 @@ prompt_for_safety() {
   echo "*** CAUTION CAUTION CAUTION CAUTION CAUTION ***"
   echo
 
-  for i in $($SEQ 1 10) ; do
+  for i in $(seq 1 10) ; do
     sleep 1
     echo -n "."
   done
