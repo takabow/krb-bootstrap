@@ -17,6 +17,7 @@
 cm_host="localhost" # Should be changed
 cluster="Cluster1" # use '%20 for spaces
 api_ver="v6" # choose appropriate versions per the CM versions. see http://cloudera.github.io/cm_api/docs/releases/
+
 base_uri=http://$cm_host:7180/api/$api_ver/clusters/$cluster
 hdfs=$(curl -X GET -u "admin:admin" -i $base_uri/services | grep '"displayName"' | grep -i hdfs | awk -F'"' '{print $4}')
 zookeeper=$(curl -X GET -u "admin:admin" -i $base_uri/services | grep '"displayName"' | grep -i zookeeper | awk -F'"' '{print $4}')
@@ -41,7 +42,7 @@ prompt_for_safety() {
   echo
 
   for i in $($SEQ 1 10) ; do
-    $SLEEP 1
+    sleep 1
     echo -n "."
   done
 
@@ -66,7 +67,7 @@ disable_mr(){
     [ -n "mr1" ]; curl -s -X PUT -H 'Content-type:application/json' \
 	-d '{"items":[{"name":"taskcontroller_min_user_id","value":"1000"}]}' \
 	-u admin:admin \
-	$base_uri/services/$mr1/roleConfigGroups/$mr1--TASKTRACKER-BASE/config
+	$base_uri/services/$mr1/roleConfigGroups/$mr1-TASKTRACKER-BASE/config
 
     [ -n "yarn" ]; curl -s -X PUT -H 'Content-type:application/json' \
 	-d '{"items":[{"name":"container_executor_min_user_id","value":"1000"}]}' \
