@@ -2,7 +2,7 @@
 
 # https://groups.google.com/a/cloudera.org/forum/#!topic/scm-users/ChGln8DekBM
 
-CMNODE=sentry.lab.cloudera.com
+CMNODE=localhost
 TARGET="$@"
 BASE=http://$CMNODE:7180/api/v8
 CLUSTER=$(curl -X GET -u "admin:admin" -i $BASE/clusters | grep '"name"' | awk -F'"' '{print $4}')
