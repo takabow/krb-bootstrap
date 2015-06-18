@@ -8,12 +8,17 @@ BASE=http://$CMNODE:7180/api/v8
 CLUSTER=$(curl -X GET -u "admin:admin" -i $BASE/clusters | grep '"name"' | awk -F'"' '{print $4}')
 
 hdfs=$(curl -X GET -u "admin:admin" -i $BASE/clusters/$CLUSTER/services | grep '"displayName"' | grep -i hdfs | awk -F'"' '{print $4}')
-hdfs=$(curl -X GET -u "admin:admin" -i $BASE/clusters/$CLUSTER/services | grep '"displayName"' | grep -i hdfs | awk -F'"' '{print $4}')
 zookeeper=$(curl -X GET -u "admin:admin" -i $BASE/clusters/$CLUSTER/services | grep '"displayName"' | grep -i zookeeper | awk -F'"' '{print $4}')
 yarn=$(curl -X GET -u "admin:admin" -i $BASE/clusters/$CLUSTER/services | grep '"displayName"' | grep -i yarn | awk -F'"' '{print $4}')
 mr1=$(curl -X GET -u "admin:admin" -i $BASE/clusters/$CLUSTER/services | grep '"displayName"' | grep -i mapreduce | awk -F'"' '{print $4}')
 hbase=$(curl -X GET -u "admin:admin" -i $BASE/clusters/$CLUSTER/services | grep '"displayName"' | grep -i hbase | awk -F'"' '{print $4}')
 
+zk(){
+    curl -s -X PUT -H 'Content-type:application/json' \
+	-d '{"items":[{"name":"enableSecurity","value":"true"}]}' \
+	-u admin:admin \
+	$BASE/clusters/$CLUSTER/services/$zookeeper/config
+}
 
 hdfs(){
     curl -s -X PUT -H 'Content-type:application/json' \
@@ -41,6 +46,13 @@ mr(){
 	$BASE/clusters/$CLUSTER/services/$yarn/roleConfigGroups/$yarn-NODEMANAGER-BASE/config
 }
 
+hbase(){
+    [ -n "hbase" ]; curl -s -X PUT -H 'Content-type:application/json' \
+	-d '{"items":[{"name":"hbase_security_authentication","value":"kerberos"},{"name":"hbase_security_authorization","value":"true"}]}' \
+	-u admin:admin \
+	$BASE/clusters/$CLUSTER/services/$hbase/config
+}
+
 krb(){
     curl -X PUT -u "admin:admin" -H "content-type:application/json" \
 	-d '{ "items": [{"name": "KDC_HOST", "value": "'$CMNODE'"}, 
@@ -65,8 +77,17 @@ restart(){
 #    curl -X POST -u admin:admin "$BASE/cm/service/commands/restart"
 }
 
+zk
 hdfs
 mr
+hbase
 krb
 other
 restart
+
+
+
+
+
+
+
