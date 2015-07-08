@@ -19,11 +19,13 @@ cluster="Cluster1" # use '%20 for spaces
 api_ver="v6" # choose appropriate versions per the CM versions. see http://cloudera.github.io/cm_api/docs/releases/
 
 base_uri=http://$cm_host:7180/api/$api_ver/clusters/$cluster
-hdfs=$(curl -X GET -u "admin:admin" -i $base_uri/services | grep '"displayName"' | grep -i hdfs | awk -F'"' '{print $4}')
-zookeeper=$(curl -X GET -u "admin:admin" -i $base_uri/services | grep '"displayName"' | grep -i zookeeper | awk -F'"' '{print $4}')
-yarn=$(curl -X GET -u "admin:admin" -i $base_uri/services | grep '"displayName"' | grep -i yarn | awk -F'"' '{print $4}')
-mr1=$(curl -X GET -u "admin:admin" -i $base_uri/services | grep '"displayName"' | grep -i mapreduce | awk -F'"' '{print $4}')
-hbase=$(curl -X GET -u "admin:admin" -i $base_uri/services | grep '"displayName"' | grep -i hbase | awk -F'"' '{print $4}')
+services_json=`curl -u admin:admin "$base_uri/services" | jq '[.items[]|{name, type}]'`
+num_services=`echo $services_json | jq 'length'`
+
+installjq(){
+    # http://qiita.com/wnoguchi/items/70a808a68e60651224a4
+    curl -o /usr/local/bin/jq http://stedolan.github.io/jq/download/linux64/jq && sudo chmod +x /usr/local/bin/jq
+}
 
 prompt_for_safety() {
   echo "*** Caution: Disabling Kerberos ***"
@@ -60,46 +62,67 @@ disable_hbase(){
     [ -n "hbase" ]; curl -s -X PUT -H 'Content-type:application/json' \
 	-d '{"items":[{"name":"hbase_security_authentication","value":"simple"},{"name":"hbase_security_authorization","value":"false"}]}' \
 	-u admin:admin \
-	$base_uri/services/$hbase/config
+	$base_uri/services/$1/config
 }
 
 disable_mr(){
     [ -n "mr1" ]; curl -s -X PUT -H 'Content-type:application/json' \
 	-d '{"items":[{"name":"taskcontroller_min_user_id","value":"1000"}]}' \
 	-u admin:admin \
-	$base_uri/services/$mr1/roleConfigGroups/$mr1-TASKTRACKER-BASE/config
+	$base_uri/services/$1/roleConfigGroups/$1-TASKTRACKER-BASE/config
 
     [ -n "yarn" ]; curl -s -X PUT -H 'Content-type:application/json' \
 	-d '{"items":[{"name":"container_executor_min_user_id","value":"1000"}]}' \
 	-u admin:admin \
-	$base_uri/services/$yarn/roleConfigGroups/$yarn-NODEMANAGER-BASE/config
+	$base_uri/services/$1/roleConfigGroups/$1-NODEMANAGER-BASE/config
 }
 
 disable_zk(){
     curl -s -X PUT -H 'Content-type:application/json' \
 	-d '{"items":[{"name":"enableSecurity","value":"false"}]}' \
 	-u admin:admin \
-	$base_uri/services/$zookeeper/config
+	$base_uri/services/$1/config
 }
 
 disable_hdfs(){
     curl -s -X PUT -H 'Content-type:application/json' \
 	-d '{"items":[{"name":"hadoop_security_authentication","value":"simple"},{"name":"hadoop_security_authorization","value":"false"}]}' \
 	-u admin:admin \
-	$base_uri/services/$hdfs/config
+	$base_uri/services/$1/config
     
     curl -s -X PUT -H 'Content-type:application/json' \
 	-d '{"items":[{"name":"dfs_datanode_http_port","value":"50075"},
 {"name":"dfs_datanode_port","value":"50010"},
 {"name":"dfs_datanode_data_dir_perm","value":"700"}]}' \
     -u admin:admin \
-    $base_uri/services/$hdfs/roleConfigGroups/$hdfs-DATANODE-BASE/config
+    $base_uri/services/$1/roleConfigGroups/$1-DATANODE-BASE/config
 }
 
 prompt_for_safety
-disable_hbase
-disable_mr
-disable_hdfs
-disable_zk
+
+index=0
+while [ $index -lt $num_services ]; do
+    dictionary=`echo $services_json | jq ".[$index]"`
+    name=`echo $dictionary | jq -r '.name'`
+    type=`echo $dictionary | jq -r '.type'`
+
+    case $type in
+        HBASE)
+            disable_hbase $name
+            ;;
+        HDFS)
+            disable_hdfs $name
+            ;;
+        YARN)
+            disable_yarn $name
+            ;;
+        ZOOKEEPER)
+            disable_zk $name
+            ;;
+    esac
+
+    let index=index+1
+done
+
 display_next_steps
 
