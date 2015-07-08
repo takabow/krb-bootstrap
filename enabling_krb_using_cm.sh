@@ -24,6 +24,7 @@ services_json=`curl -u admin:admin "$BASE/clusters/$CLUSTER/services" | jq '[.it
 num_services=`echo $services_json | jq 'length'`
 
 installjq(){
+    # http://qiita.com/wnoguchi/items/70a808a68e60651224a4
     curl -o /usr/local/bin/jq http://stedolan.github.io/jq/download/linux64/jq && sudo chmod +x /usr/local/bin/jq
 }
 
