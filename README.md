@@ -1,4 +1,12 @@
-# Kerberos KDC Bootstrapper
+NOTE: This repository has couple of scripts which functions independently.
+
+ Name          | Description
+-----------------|---------------------------------
+ configure_krb5.sh | This is Kerberos KDC bootstrapper which installs KDC (and dependent) packages, configures, and starts.
+ enabling_krb_using_cm.sh | This enables Kerberos authentication over Hadoop cluster managed by Cloudera Manager
+ disable_krb5.sh | This disables Kerberos authentication over Hadoop cluster managed by Cloudera Manager
+
+# Kerberos KDC Bootstrapper (configure_krb5.sh)
 
 This utility will configure and create a local Kerberos KDC for use with
 Cloudera Manager and CDH.
