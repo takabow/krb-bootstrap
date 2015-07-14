@@ -19,7 +19,7 @@ cluster="Cluster1" # use '%20 for spaces
 api_ver="v6" # choose appropriate versions per the CM versions. see http://cloudera.github.io/cm_api/docs/releases/
 
 base_uri=http://$cm_host:7180/api/$api_ver/clusters/$cluster
-services_json=`curl -u admin:admin "$base_uri/services" | jq '[.items[]|{name, type}]'`
+services_json=`curl -s -u admin:admin "$base_uri/services" | jq '[.items[]|{name, type}]'`
 num_services=`echo $services_json | jq 'length'`
 
 installjq(){

@@ -20,7 +20,7 @@ CMNODE=localhost
 TARGET="$@"
 BASE=http://$CMNODE:7180/api/v8
 CLUSTER=$(curl -X GET -u "admin:admin" -i $BASE/clusters | grep '"name"' | awk -F'"' '{print $4}')
-services_json=`curl -u admin:admin "$BASE/clusters/$CLUSTER/services" | jq '[.items[]|{name, type}]'`
+services_json=`curl -s -u admin:admin "$BASE/clusters/$CLUSTER/services" | jq '[.items[]|{name, type}]'`
 num_services=`echo $services_json | jq 'length'`
 
 installjq(){
