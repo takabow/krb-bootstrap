@@ -109,6 +109,9 @@ while [ $index -lt $num_services ]; do
             ;;
         YARN)
             mr $name
+	    ;;
+	MAPREDUCE)
+	    mr $name
             ;;
         ZOOKEEPER)
             zk $name

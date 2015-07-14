@@ -114,7 +114,10 @@ while [ $index -lt $num_services ]; do
             disable_hdfs $name
             ;;
         YARN)
-            disable_yarn $name
+            disable_mr $name
+	    ;;
+	MAPREDUCE)
+	    disable_mr $name
             ;;
         ZOOKEEPER)
             disable_zk $name
