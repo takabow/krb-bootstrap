@@ -15,6 +15,7 @@
 # Copyright Cloudera 2015
 
 # https://groups.google.com/a/cloudera.org/forum/#!topic/scm-users/ChGln8DekBM
+curl -o /usr/local/bin/jq http://stedolan.github.io/jq/download/linux64/jq && sudo chmod +x /usr/local/bin/jq
 
 CMNODE=localhost
 TARGET="$@"
@@ -22,11 +23,6 @@ BASE=http://$CMNODE:7180/api/v8
 CLUSTER=$(curl -X GET -u "admin:admin" -i $BASE/clusters | grep '"name"' | awk -F'"' '{print $4}')
 services_json=`curl -s -u admin:admin "$BASE/clusters/$CLUSTER/services" | jq '[.items[]|{name, type}]'`
 num_services=`echo $services_json | jq 'length'`
-
-installjq(){
-    # http://qiita.com/wnoguchi/items/70a808a68e60651224a4
-    curl -o /usr/local/bin/jq http://stedolan.github.io/jq/download/linux64/jq && sudo chmod +x /usr/local/bin/jq
-}
 
 zk(){
     curl -s -X PUT -H 'Content-type:application/json' \
@@ -91,8 +87,6 @@ display_next_steps() {
   echo "deploy Kerberos client configuration, deploy cluster client configuration, "
   echo "and start the cluster."
 }
-
-installjq
 
 index=0
 while [ $index -lt $num_services ]; do

@@ -14,6 +14,9 @@
 #
 # Copyright Cloudera 2015
 
+# http://qiita.com/wnoguchi/items/70a808a68e60651224a4
+curl -o /usr/local/bin/jq http://stedolan.github.io/jq/download/linux64/jq && sudo chmod +x /usr/local/bin/jq
+
 cm_host="localhost" # Should be changed
 cluster="Cluster1" # use '%20 for spaces
 api_ver="v6" # choose appropriate versions per the CM versions. see http://cloudera.github.io/cm_api/docs/releases/
@@ -21,11 +24,6 @@ api_ver="v6" # choose appropriate versions per the CM versions. see http://cloud
 base_uri=http://$cm_host:7180/api/$api_ver/clusters/$cluster
 services_json=`curl -s -u admin:admin "$base_uri/services" | jq '[.items[]|{name, type}]'`
 num_services=`echo $services_json | jq 'length'`
-
-installjq(){
-    # http://qiita.com/wnoguchi/items/70a808a68e60651224a4
-    curl -o /usr/local/bin/jq http://stedolan.github.io/jq/download/linux64/jq && sudo chmod +x /usr/local/bin/jq
-}
 
 prompt_for_safety() {
   echo "*** Caution: Disabling Kerberos ***"
