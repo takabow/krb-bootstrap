@@ -1,0 +1,54 @@
+yum install krb5-workstation krb5-server -y
+#########################################################
+cat <<EOF >> /var/kerberos/krb5kdc/kdc.conf
+[kdcdefaults]
+ kdc_ports = 88
+ kdc_tcp_ports = 88
+
+[realms]
+ CLOUDERA.CO.JP = {
+  master_key_type = aes256-cts
+  max_renewable_life = 7d 0h 0m 0s
+  acl_file = /var/kerberos/krb5kdc/kadm5.acl
+  dict_file = /usr/share/dict/words
+  admin_keytab = /var/kerberos/krb5kdc/kadm5.keytab
+  # supported_enctypes = aes256-cts:normal aes128-cts:normal des3-hmac-sha1:normal arcfour-hmac:normal des-hmac-sha1:normal des-cbc-md5:normal des-cbc-crc:normal
+  supported_enctypes = aes256-cts:normal
+  default_principal_flags = +renewable
+ }
+EOF
+#########################################################
+cat <<EOF >> /var/kerberos/krb5kdc/kadm5.acl
+*/admin@CLOUDERA.CO.JP	*
+EOF
+#########################################################
+cat <<EOD >> /etc/krb5.conf
+[libdefaults]
+default_realm = CLOUDERA.CO.JP
+dns_lookup_kdc = false
+dns_lookup_realm = false
+ticket_lifetime = 86400
+renew_lifetime = 604800
+forwardable = true
+default_tgs_enctypes = aes256-cts
+default_tkt_enctypes = aes256-cts
+permitted_enctypes = aes256-cts
+udp_preference_limit = 1
+[realms]
+CLOUDERA.CO.JP = {
+kdc = c5.demo.dev
+admin_server = c5.demo.dev
+}
+EOF
+#########################################################
+kdb5_util create -s
+if the command gets hung with 'Loading random data', see http://championofcyrodiil.blogspot.in/2014/01/increasing-entropy-in-vm-for-kerberos.html
+#########################################################
+service krb5kdc start
+service kadmin start
+#########################################################
+kadmin.local -q "addprinc -pw cloudera cloudera-scm/admin"; done
+kadmin.local -q "addprinc -pw hdfs hdfs"
+kadmin.local -q "addprinc -pw hive hive"
+kadmin.local -q "addprinc -pw daisuke daisuke"
+#########################################################
